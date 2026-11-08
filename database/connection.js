@@ -1,21 +1,23 @@
-const mysql = require('mysql');
+require('dotenv').config();
+const { Pool } = require('pg');
 
-// Create connection pool
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'tecnologias_db',
-  port: process.env.DB_PORT || 3306
+if (!process.env.DATABASE_URL) {
+  console.error('Falta DATABASE_URL: revisa que exista el archivo .env en la raíz del backend');
+}
+
+// Supabase exige conexión segura (SSL)
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
-// Connect to database
-connection.connect((err) => {
+// Prueba la conexión al arrancar
+pool.query('SELECT NOW()', (err) => {
   if (err) {
-    console.error('Error conectando a la base de datos:', err.code);
+    console.error('Error conectando a la base de datos:', err.code || err.message);
     return;
   }
-  console.log('Conectado a la base de datos');
+  console.log('Conectado a la base de datos (Supabase)');
 });
 
-module.exports = connection;
+module.exports = pool;

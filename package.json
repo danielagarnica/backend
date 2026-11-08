@@ -16,7 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mysql": "^2.18.1"
+    "dotenv": "^18.0.9",
+    "pg": "^8.23.1"
   },
   "engines": {
     "node": "18.x"
