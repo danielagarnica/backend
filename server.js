@@ -1,45 +1,47 @@
 const http = require('http');
-const url = require('url');
-const querystring = require('querystring');
+const authRoutes = require('./routes/auth.routes');
+const recursosRoutes = require('./routes/recursos.routes');
+const { enviarJson } = require('./utils/http');
 
-// Import routes
-const userRoutes = require('./routes/user.routes');
-
-// Get environment variables
 const PORT = process.env.PORT || 3000;
 
-// Create server
-const server = http.createServer((req, res) => {
-  // Set CORS headers
+if (!process.env.JWT_SECRET) {
+  console.error('Falta JWT_SECRET en el archivo .env (el login no funcionará hasta agregarlo)');
+}
+
+const server = http.createServer(async (req, res) => {
+  // CORS: permite que la página (otro puerto) hable con este backend
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  // Handle preflight requests
   if (req.method === 'OPTIONS') {
-    res.writeHead(200);
-    res.end();
-    return;
+    res.writeHead(204);
+    return res.end();
   }
 
-  // Parse URL
-  const parsedUrl = url.parse(req.url, true);
-  const pathname = parsedUrl.pathname;
+  const { pathname } = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
 
-  // Route requests
-  if (pathname.startsWith('/api/users')) {
-    userRoutes(req, res, pathname, parsedUrl.query);
-  } else if (pathname === '/') {
-    res.writeHead(200);
-    res.end(JSON.stringify({ message: 'Servidor backend activo' }));
-  } else {
-    res.writeHead(404);
-    res.end(JSON.stringify({ error: 'Ruta no encontrada' }));
+  try {
+    if (pathname === '/') {
+      return enviarJson(res, 200, { message: 'Servidor backend activo' });
+    }
+    if (pathname.startsWith('/api/auth/')) {
+      return await authRoutes(req, res, pathname);
+    }
+    if (pathname.startsWith('/api/')) {
+      return await recursosRoutes(req, res, pathname);
+    }
+    enviarJson(res, 404, { error: 'Ruta no encontrada' });
+  } catch (error) {
+    if (error.message === 'JSON_INVALIDO') {
+      return enviarJson(res, 400, { error: 'JSON inválido' });
+    }
+    console.error('Error real:', error);
+    enviarJson(res, 500, { error: 'Error interno del servidor' });
   }
 });
 
-// Start server
 server.listen(PORT, () => {
   console.log(`Servidor ejecutándose en puerto ${PORT}`);
   console.log(`http://localhost:${PORT}`);
