@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gastos - PocketPet</title>
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/gastos.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+
+    <div class="navbar-left">
+      <img src="assets/mascota.png" alt="PocketPet" class="nav-logo">
+      <span class="nav-brand">POCKETPET</span>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="inicio.html" class="nav-link">🏠 Inicio</a></li>
+      <li><a href="ingresos.html" class="nav-link">$ Ingresos</a></li>
+      <li><a href="gastos.html" class="nav-link active">🛒 Gastos</a></li>
+      <li><a href="metas.html" class="nav-link">🎯 Metas</a></li>
+      <li><a href="ahorros.html" class="nav-link">🏦 Ahorros</a></li>
+    </ul>
+
+    <div class="navbar-right">
+      <details class="user-menu">
+        <summary class="user-btn">
+          <span class="user-avatar">U</span>
+          <span class="user-name">Usuario</span>
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="user-dropdown">
+          <a href="index.html" class="logout">Cerrar sesión</a>
+        </div>
+      </details>
+
+      <label for="menu-toggle" class="hamburger" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </label>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container">
+
+    <!-- Encabezado de la Sección -->
+    <header class="section-header">
+      <h1>GASTOS</h1>
+      <p>Controla tus gastos para mantener tus finanzas saludables</p>
+    </header>
+
+    <!-- Disposición en 2 Columnas -->
+    <div class="gastos-grid">
+
+      <!-- COLUMNA IZQUIERDA: Métricas + Mascota + Consejo -->
+      <div class="left-col">
+        
+        <!-- Fila de Tarjetas Superiores (Ingresos vs Gastos) -->
+        <div class="stats-row">
+          <div class="card-mini card-ingresos-mini">
+            <span class="card-label">INGRESOS</span>
+            <strong class="card-amount" id="gasto-ingresos-total">$0</strong>
+          </div>
+          <div class="card-mini card-gastos-mini">
+            <span class="card-label">GASTOS</span>
+            <strong class="card-amount" id="gasto-gastos-total">$0</strong>
+          </div>
+        </div>
+
+        <!-- Tarjeta Saldo Disponible -->
+        <div class="card-saldo">
+          <span class="card-label">SALDO DISPONIBLE</span>
+          <strong class="card-amount" id="gasto-saldo-total">$0</strong>
+        </div>
+
+        <!-- Mascota con Factura/Recibos -->
+        <div class="mascot-container">
+          <img src="assets/mascota-gastos.png" alt="Mascota revisando gastos" class="mascot-img">
+        </div>
+
+        <!-- Caja de Consejo PocketPet -->
+        <div class="tip-card">
+          <div class="tip-title">💡 Consejo PocketPet</div>
+          <p class="tip-text">
+            Intenta que tus gastos no superen el 70% de tus ingresos. El 30% restante debería ir a ahorros y metas.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- COLUMNA DERECHA: Formulario de Registro + Historial -->
+      <div class="right-col">
+        <div class="form-card">
+          
+          <div class="form-header">
+            <h2>Nuevo Gasto</h2>
+            <p>Registra un gasto de forma responsable</p>
+          </div>
+
+          <form id="gastos-form" class="gastos-form">
+            
+            <div class="form-group">
+              <label for="descripcion-gasto">Descripción *</label>
+              <input type="text" id="descripcion-gasto" placeholder="¿En qué gastaste?" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="monto-gasto">Monto (COP) *</label>
+                <input type="number" id="monto-gasto" placeholder="0.00" step="0.01" min="0" required>
+              </div>
+
+              <div class="form-group">
+                <label for="categoria-gasto">Categoría *</label>
+                <select id="categoria-gasto" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option value="alimentacion">Alimentación</option>
+                  <option value="transporte">Transporte</option>
+                  <option value="entretenimiento">Entretenimiento</option>
+                  <option value="servicios">Servicios y Recibos</option>
+                  <option value="educacion">Educación</option>
+                  <option value="otros">Otros</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="fecha-gasto">Fecha *</label>
+              <input type="date" id="fecha-gasto" required>
+            </div>
+
+            <div class="form-group">
+              <label for="notas-gasto">Notas (opcional)</label>
+              <textarea id="notas-gasto" rows="3" placeholder="Notas adicionales..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-gasto">Guardar Gasto</button>
+
+          </form>
+
+        </div>
+
+        <!-- Contenedor Historial de Gastos -->
+        <div class="history-card">
+          <div class="history-header">
+            <h3>Historial de Gastos</h3>
+            <button id="btn-reset-gastos" class="btn-reset" type="button">Reiniciar Datos</button>
+          </div>
+          <div id="lista-historial-gastos" class="history-list"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script src="js/gastos.js"></script>
+
+</body>
+</html>

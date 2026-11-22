@@ -1,0 +1,226 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.landing {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------- PANEL IZQUIERDO ---------- */
+.panel-left {
+  flex: 1 1 0;
+  min-width: 0;
+  background-color: #2e5c3e;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.blob-1 {
+  width: clamp(240px, 20vw, 380px);
+  height: clamp(240px, 20vw, 380px);
+  top: -60px;
+  left: -60px;
+}
+.blob-2 {
+  width: clamp(300px, 26vw, 480px);
+  height: clamp(300px, 26vw, 480px);
+  bottom: -100px;
+  right: -100px;
+}
+.blob-3 {
+  width: clamp(180px, 15vw, 280px);
+  height: clamp(180px, 15vw, 280px);
+  bottom: 40px;
+  left: -40px;
+}
+
+.brand {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: white;
+  font-weight: bold;
+  letter-spacing: 1px;
+  z-index: 2;
+}
+
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+/* Mascota: crece con el ancho de la pantalla (mínimo 240px, máximo 460px) */
+.mascot {
+  width: clamp(240px, 24vw, 460px);
+  height: auto;
+  z-index: 2;
+  margin-bottom: clamp(1.5rem, 4vh, 3rem);
+}
+
+.left-text {
+  text-align: center;
+  color: white;
+  z-index: 2;
+}
+
+.left-text h2 {
+  font-size: clamp(1.5rem, 2.2vw, 2.4rem);
+  font-weight: 500;
+  margin-bottom: 0.6rem;
+}
+
+.left-text p {
+  font-size: clamp(0.9rem, 1.1vw, 1.15rem);
+  opacity: 0.8;
+}
+
+/* ---------- PANEL DERECHO ---------- */
+.panel-right {
+  flex: 1 1 0;
+  min-width: 0;
+  background-color: #eef5ea;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Todo el contenido comparte el mismo ancho y queda centrado en su mitad */
+.panel-right > * {
+  width: 100%;
+  max-width: 460px;
+}
+
+.brand-small {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.brand-icon-small {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+}
+
+.brand-small strong {
+  color: #2e5c3e;
+  font-size: 1.1rem;
+}
+
+.brand-small p {
+  font-size: 0.75rem;
+  color: #6a8a74;
+}
+
+.panel-right h1 {
+  font-size: clamp(2rem, 2.8vw, 3rem);
+  color: #1f3d28;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.panel-right h1 span {
+  color: #4a9c5d;
+}
+
+.description {
+  color: #4b5d50;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.tag {
+  background-color: #dcebd9;
+  color: #2e5c3e;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.9rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 0.8rem;
+}
+
+.btn-primary {
+  background-color: #2e5c3e;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #244a32;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #2e5c3e;
+  border: 2px solid #2e5c3e;
+}
+
+.btn-secondary:hover {
+  background-color: #dcebd9;
+}
+
+.footer-text {
+  color: #6a8a74;
+  font-size: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* ---------- RESPONSIVE (celular) ---------- */
+@media (max-width: 768px) {
+  .landing {
+    flex-direction: column;
+  }
+  .panel-left {
+    flex: none;
+    min-height: 320px;
+    padding: 1.5rem;
+  }
+  .mascot {
+    width: 160px;
+    margin-bottom: 1rem;
+  }
+  .panel-right {
+    flex: none;
+    padding: 2rem 1.5rem;
+  }
+}

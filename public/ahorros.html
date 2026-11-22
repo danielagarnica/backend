@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahorros - PocketPet</title>
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/ahorros.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+
+    <div class="navbar-left">
+      <img src="assets/mascota.png" alt="PocketPet" class="nav-logo">
+      <span class="nav-brand">POCKETPET</span>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="inicio.html" class="nav-link">🏠 Inicio</a></li>
+      <li><a href="ingresos.html" class="nav-link">$ Ingresos</a></li>
+      <li><a href="gastos.html" class="nav-link">🛒 Gastos</a></li>
+      <li><a href="metas.html" class="nav-link">🎯 Metas</a></li>
+      <li><a href="ahorros.html" class="nav-link active">🏦 Ahorros</a></li>
+    </ul>
+
+    <div class="navbar-right">
+      <details class="user-menu">
+        <summary class="user-btn">
+          <span class="user-avatar">U</span>
+          <span class="user-name">Usuario</span>
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="user-dropdown">
+          <a href="index.html" class="logout">Cerrar sesión</a>
+        </div>
+      </details>
+
+      <label for="menu-toggle" class="hamburger" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </label>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container">
+
+    <!-- Encabezado de la Sección -->
+    <header class="section-header">
+      <h1>AHORROS</h1>
+      <p>Controla tus gastos para mantener tus finanzas saludables</p>
+    </header>
+
+    <!-- Disposición en 2 Columnas -->
+    <div class="ahorros-grid">
+
+      <!-- COLUMNA IZQUIERDA -->
+      <div class="left-col">
+        
+        <!-- Tarjeta Total Ahorrado -->
+        <div class="card-total purple-card">
+          <div class="card-total-content">
+            <span class="card-icon">🏦</span>
+            <div class="card-text-wrapper">
+              <span class="card-label">TOTAL AHORRADO</span>
+              <strong class="card-amount">$0</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta Tasa de Ahorro (RF-07) -->
+        <div class="card-progreso">
+          <span class="card-label">Tasa de ahorro</span>
+          <div class="progress-info">
+            <strong class="percent">0%</strong> <span class="percent-text">de tus ingresos</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+          <p class="progress-hint">Intenta ahorrar al menos 20% 🎯</p>
+        </div>
+
+        <!-- Mascota con Alcancía -->
+        <div class="mascot-container">
+          <img src="assets/mascota_ahorrando.png" alt="Mascota con alcancía" class="mascot-img">
+        </div>
+
+        <!-- Caja de Consejo PocketPet -->
+        <div class="tip-card purple-tip">
+          <div class="tip-title">💡 Consejo PocketPet</div>
+          <p class="tip-text">
+            La regla 50/30/20 sugiere: 50% para necesidades, 30% para deseos y 20% para ahorros e inversiones.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- COLUMNA DERECHA: Formulario (RF-08) -->
+      <div class="right-col">
+        <div class="form-card">
+          
+          <div class="form-header purple-header">
+            <h2>Nuevo Ahorro</h2>
+            <p>Registra cada cantidad que destinas al ahorro</p>
+          </div>
+
+          <form id="ahorros-form" class="ahorros-form" class="ahorros-form">
+            
+            <div class="form-group">
+              <label for="nombre-ahorro">Nombre del ahorro *</label>
+              <input type="text" id="nombre-ahorro" placeholder="Ej: Fondo de emergencia, Ahorro mensual..." required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="monto-ahorro">Monto (COP) *</label> 
+                <input type="number" id="monto-ahorro" placeholder="0.00" step="0.01" min="0" required>
+              </div>
+
+              <div class="form-group">
+                <label for="fecha-ahorro">Fecha *</label>
+                <input type="date" id="fecha-ahorro" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="notas-ahorro">Notas (opcional)</label>
+              <textarea id="notas-ahorro" rows="3" placeholder="¿Para qué estás ahorrando?"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-ahorro">Guardar Ahorro</button>
+            
+
+          </form>
+
+        </div>
+        <!-- ... (código del form-card) ... -->
+        
+        <!-- Nuevo contenedor: Historial de Ahorros -->
+        <div class="history-card">
+          <div class="history-header">
+            <h3>Historial de Ahorros</h3>
+            <!-- Botón para borrar los datos guardados en pruebas -->
+            <button id="btn-reset-ahorros" class="btn-reset" type="button">Reiniciar Datos</button>
+          </div>
+          <div id="lista-historial-ahorros" class="history-list">
+            <!-- Los items se inyectarán automáticamente con JavaScript -->
+          </div>
+        </div>
+
+      </div> <!-- Cierre de right-col -->
+      </div>
+
+    </div>
+
+  </main>
+  <script src="js/storage.js"></script>
+  <script src="js/ahorros.js"></script>
+
+</body>
+</html>
