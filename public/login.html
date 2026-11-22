@@ -57,12 +57,11 @@
 
       boton.disabled = true;
       try {
-        cerrarSesion();
-        const datos = await apiFetch('/api/auth/login', {
+        await apiFetch('/api/auth/login', {
           method: 'POST',
           body: JSON.stringify({ email, password })
         });
-        guardarSesion(datos);
+        // El backend ya dejó la sesión en una cookie HttpOnly
         window.location.href = 'inicio.html';
       } catch (error) {
         alert(error.message);

@@ -1,0 +1,31 @@
+# Evita que Supabase pause el proyecto por inactividad (plan Free: ~7 días)
+# y de paso despierta el servidor de Render.
+#
+# Configuración (una sola vez):
+#   GitHub > Settings > Secrets and variables > Actions > Variables
+#   Nueva variable HEALTH_URL = https://TU-APP.onrender.com/api/health
+#
+# Nota: GitHub solo ejecuta los "schedule" desde la rama por defecto del
+# repositorio, y los desactiva si el repositorio pasa 60 días sin actividad.
+name: Mantener activa la base de datos
+
+on:
+  schedule:
+    - cron: '0 13 */3 * *' # Cada 3 días, 8:00 a. m. hora Colombia
+  workflow_dispatch: # Permite ejecutarlo a mano desde la pestaña Actions
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar /api/health
+        env:
+          HEALTH_URL: ${{ vars.HEALTH_URL }}
+        run: |
+          if [ -z "$HEALTH_URL" ]; then
+            echo "Falta la variable HEALTH_URL en la configuración del repositorio"
+            exit 1
+          fi
+          # Render (plan Free) puede tardar ~1 minuto en despertar: se reintenta
+          curl --fail --silent --show-error --retry 5 --retry-delay 20 \
+               --retry-all-errors --max-time 90 "$HEALTH_URL"

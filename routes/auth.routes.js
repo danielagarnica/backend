@@ -11,6 +11,14 @@ const handleAuthRoutes = (req, res, pathname) => {
   if (req.method === 'POST' && pathname === '/api/auth/login') {
     return authController.iniciarSesion(req, res);
   }
+  // POST /api/auth/logout - Cerrar sesión (borra la cookie)
+  if (req.method === 'POST' && pathname === '/api/auth/logout') {
+    return authController.cerrarSesion(req, res);
+  }
+  // GET /api/auth/me - Usuario con sesión activa
+  if (req.method === 'GET' && pathname === '/api/auth/me') {
+    return authController.usuarioActual(req, res);
+  }
   enviarJson(res, 404, { error: 'Ruta no encontrada' });
 };
 

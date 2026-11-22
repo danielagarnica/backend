@@ -20,4 +20,10 @@ const crear = async ({ nombre, email, passwordHash }) => {
   return resultado.rows[0];
 };
 
-module.exports = { buscarPorEmail, crear };
+// Busca un usuario por id. Devuelve sus datos públicos o null.
+const buscarPorId = async (id) => {
+  const resultado = await db.query('SELECT id, nombre, email FROM usuarios WHERE id = $1', [id]);
+  return resultado.rows[0] || null;
+};
+
+module.exports = { buscarPorEmail, buscarPorId, crear };
