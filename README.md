@@ -135,6 +135,10 @@ El esquema está en [`database/schema.sql`](database/schema.sql) y sigue el diag
 
 Todas las tablas tienen RLS activado y sin permisos para `anon`/`authenticated`: los datos solo se leen a través de este backend, nunca directamente con la clave pública de Supabase.
 
+**Probar la conexión:** `npm run db:check`. Comprueba `DATABASE_URL`, explica el error si no conecta y compara las tablas de Supabase con las que usa el backend (no modifica nada).
+
+> Usa siempre la URL del **Session pooler** (`…pooler.supabase.com:5432`, usuario `postgres.<id-del-proyecto>`). La conexión directa `db.<id>.supabase.co` solo funciona con IPv6 y falla en Render y en muchas redes.
+
 **Crear las tablas** (una de las dos opciones; se puede repetir sin problema):
 
 - Con el `.env` configurado: `npm run db:setup`
