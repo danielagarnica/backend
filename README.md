@@ -78,16 +78,48 @@ Todas las rutas, excepto las de `/api/auth`, requieren iniciar sesión. La pági
 ## Estructura
 
 ```
-backend-1/
-├── server.js               # Servidor y CORS
-├── database/connection.js  # Conexión a Supabase
+backend/
+├── server.js                      # Servidor y CORS
+├── .env.example                   # Plantilla de variables de entorno (el .env real no se sube)
+├── database/
+│   ├── connection.js              # Conexión a Supabase (pool de pg)
+│   ├── schema.sql                 # Tablas, índices y seguridad (PostgreSQL)
+│   └── setup.js                   # Aplica schema.sql: npm run db:setup
 ├── routes/
-│   ├── auth.routes.js      # Registro y login
-│   └── recursos.routes.js  # Ingresos, gastos, ahorros y metas
+│   ├── auth.routes.js             # Registro y login
+│   └── recursos.routes.js         # Ingresos, gastos, ahorros y metas
+├── controllers/
+│   ├── auth.controller.js         # Validación y respuesta de registro/login
+│   └── recursos.controller.js     # Validación y respuesta del CRUD
+├── models/
+│   ├── usuario.model.js           # Consultas a la tabla usuarios
+│   └── recurso.model.js           # Consultas genéricas a ingresos/gastos/ahorros/metas
 └── utils/
-    ├── auth.js             # Creación y lectura de tokens
-    └── http.js             # Funciones auxiliares de respuesta
+    ├── auth.js                    # Creación y lectura de tokens
+    └── http.js                    # Funciones auxiliares de respuesta
 ```
+
+## Base de datos
+
+El esquema está en [`database/schema.sql`](database/schema.sql) y sigue el diagrama `Modelo de datos.jpeg` del repositorio `POCKETPET`.
+
+| Tabla | Relación | Notas |
+|---|---|---|
+| `usuarios` | — | `email` único y en minúsculas; la contraseña se guarda solo como hash bcrypt |
+| `categorias` | 1 — N `gastos` | Catálogo fijo; `codigo` coincide con los valores del formulario de gastos |
+| `ingresos` | `usuarios` 1 — N | |
+| `gastos` | `usuarios` 1 — N, `categorias` 1 — N | `categoria` es FK a `categorias.codigo` |
+| `metas` | `usuarios` 1 — N | `progreso` (0–100) se calcula solo |
+| `ahorros` | `usuarios` 1 — N, `metas` 1 — N | `meta_id` se llena si el nombre del ahorro coincide con una meta |
+
+Todas las tablas tienen RLS activado y sin permisos para `anon`/`authenticated`: los datos solo se leen a través de este backend, nunca directamente con la clave pública de Supabase.
+
+**Crear las tablas** (una de las dos opciones; se puede repetir sin problema):
+
+- Con el `.env` configurado: `npm run db:setup`
+- O pegando el contenido de `database/schema.sql` en el SQL Editor de Supabase.
+
+> Si las tablas ya existían con otra estructura, `schema.sql` **no las modifica** (usa `CREATE TABLE IF NOT EXISTS`). Revisa las columnas en el Table Editor antes de usarlo sobre una base con datos.
 
 ## Trabajar en equipo
 

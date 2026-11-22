@@ -1,12 +1,12 @@
 {
-  "name": "tecnologias-backend",
+  "name": "pocketpet-backend",
   "version": "1.0.0",
-  "description": "Backend del sistema de tecnologías",
+  "description": "API REST de PocketPet (Node.js + Supabase PostgreSQL)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "test": "node test-api.js"
+    "dev": "node --watch server.js",
+    "db:setup": "node database/setup.js"
   },
   "keywords": [
     "backend",
@@ -22,6 +22,6 @@
     "pg": "^8.23.1"
   },
   "engines": {
-    "node": "18.x"
+    "node": ">=18"
   }
 }
