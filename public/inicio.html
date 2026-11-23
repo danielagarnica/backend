@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio - PocketPet</title>
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/inicio.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+
+    <div class="navbar-left">
+      <img src="assets/mascota.png" alt="PocketPet" class="nav-logo">
+      <span class="nav-brand">POCKETPET</span>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="inicio.html" class="nav-link active">🏠 Inicio</a></li>
+      <li><a href="ingresos.html" class="nav-link">$ Ingresos</a></li>
+      <li><a href="gastos.html" class="nav-link">🛒 Gastos</a></li>
+      <li><a href="metas.html" class="nav-link">🎯 Metas</a></li>
+      <li><a href="ahorros.html" class="nav-link">🏦 Ahorros</a></li>
+    </ul>
+
+    <div class="navbar-right">
+      <details class="user-menu">
+        <summary class="user-btn">
+          <span class="user-avatar">U</span>
+          <span class="user-name">Usuario</span>
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="user-dropdown">
+          <a href="index.html" class="logout">Cerrar sesión</a>
+        </div>
+      </details>
+
+      <label for="menu-toggle" class="hamburger" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </label>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO -->
+  <main class="container">
+
+    <div class="welcome">
+      <div>
+        <h1>¡Bienvenido, Usuario!</h1>
+        <p>Comienza registrando tus ingresos para activar todas las funciones.</p>
+      </div>
+      <div class="balance">
+        <span>BALANCE ACTUAL</span>
+        <strong id="inicio-balance-actual">$0</strong>
+      </div>
+    </div>
+
+    <!-- Banner de inicio -->
+    <section class="banner">
+      <img src="assets/mascota_traje.png" alt="Mascota PocketPet" class="banner-img">
+      <div class="banner-text">
+        <h2>¡Tu perfil está listo! Comencemos juntos 🚀</h2>
+        <p>Primero, registra tus ingresos. Sin ingresos no podrás agregar gastos. Luego podrás definir metas y ahorros.</p>
+      </div>
+      <a href="ingresos.html" class="btn-banner">Registrar Ingreso</a>
+    </section>
+
+    <!-- Tarjetas resumen -->
+    <section class="stats">
+      <div class="stat-card stat-ingresos">
+        <div class="stat-top"><span>💰</span><a href="ingresos.html" class="ver">VER</a></div>
+        <small>INGRESOS TOTALES</small>
+        <strong id="inicio-total-ingresos">$0</strong>
+      </div>
+      <div class="stat-card stat-gastos">
+        <div class="stat-top"><span>💸</span><a href="gastos.html" class="ver">VER</a></div>
+        <small>GASTOS TOTALES</small>
+        <strong id="inicio-total-gastos">$0</strong>
+      </div>
+      <div class="stat-card stat-metas">
+        <div class="stat-top"><span>🎯</span><a href="metas.html" class="ver">VER</a></div>
+        <small>METAS ACTIVAS</small>
+        <strong id="inicio-total-metas">0</strong>
+      </div>
+      <div class="stat-card stat-ahorros">
+        <div class="stat-top"><span>🏦</span><a href="ahorros.html" class="ver">VER</a></div>
+        <small>AHORROS TOTALES</small>
+        <strong id="inicio-total-ahorros">$0</strong>
+      </div>
+    </section>
+
+    <!-- Metas y Ahorros -->
+    <section class="panels"> <!-- Esta etiqueta faltaba -->
+      
+      <div class="panel">
+        <div class="panel-header">
+          <h3>🎯 Mis Metas <span class="count" id="inicio-contador-metas">0</span></h3>
+          <a href="metas.html" class="btn-small">+ Agregar Meta</a>
+        </div>
+        <div class="panel-body empty" id="panel-metas-body">
+          <img src="assets/mascota-viaje.png" alt="" class="empty-img">
+          <p class="empty-title">No tienes metas aún</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3>🏦 Mis Ahorros <span class="count" id="inicio-contador-ahorros">0</span></h3>
+          <a href="ahorros.html" class="btn-small">+ Agregar Ahorro</a>
+        </div>
+        <div class="panel-body empty" id="panel-ahorros-body">
+          <img src="assets/mascota_ahorrando.png" alt="" class="empty-img">
+          <p class="empty-title">No tienes ahorros registrados</p>
+        </div>
+      </div>
+
+    </section> <!-- Cierre de la sección de paneles -->
+
+  </main>
+
+  <!-- Enlace al script que unifica todas las vistas -->
+  <script src="js/storage.js"></script>
+  <script src="js/inicio.js"></script>
+</body>
+</html>

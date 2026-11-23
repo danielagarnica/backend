@@ -1,0 +1,19 @@
+# Configuración de despliegue en Render (https://render.com/docs/blueprint-spec)
+# En Render: New > Blueprint > selecciona este repositorio.
+services:
+  - type: web
+    name: pocketpet
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Se escribe a mano en el panel de Render (no se guarda en el repositorio)
+      - key: DATABASE_URL
+        sync: false
+      # Render genera una clave aleatoria automáticamente
+      - key: JWT_SECRET
+        generateValue: true

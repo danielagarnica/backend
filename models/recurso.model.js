@@ -26,14 +26,27 @@ const RECURSOS = {
     numericos: ['monto'],
     defecto: { notas: '' },
     seleccion: 'id, nombre, monto, fecha, notas',
-    // Al registrar un ahorro, suma ese monto a la meta que tenga el mismo nombre
-    despuesDeCrear: async (usuarioId, datos) => {
-      await db.query(
+    // Antes de guardar el ahorro, busca la meta del usuario con el mismo nombre
+    // y la enlaza (columna meta_id). Devuelve columnas extra para el INSERT.
+    antesDeCrear: async (cliente, usuarioId, datos) => {
+      const resultado = await cliente.query(
+        `SELECT id FROM metas
+          WHERE usuario_id = $1
+            AND LOWER(TRIM(nombre)) = LOWER(TRIM($2))
+          ORDER BY id DESC
+          LIMIT 1`,
+        [usuarioId, datos.nombre]
+      );
+      return { meta_id: resultado.rows[0] ? resultado.rows[0].id : null };
+    },
+    // Después de guardarlo, suma el monto a la meta enlazada
+    despuesDeCrear: async (cliente, usuarioId, datos, extra) => {
+      if (!extra.meta_id) return;
+      await cliente.query(
         `UPDATE metas
             SET monto_ahorrado = monto_ahorrado + $1
-          WHERE usuario_id = $2
-            AND LOWER(TRIM(nombre)) = LOWER(TRIM($3))`,
-        [Number(datos.monto), usuarioId, datos.nombre]
+          WHERE id = $2 AND usuario_id = $3`,
+        [Number(datos.monto), extra.meta_id, usuarioId]
       );
     }
   },
@@ -51,7 +64,7 @@ const RECURSOS = {
     defecto: { ahorrado: 0 },
     // Se renombran las columnas para que la página reciba fecha, objetivo y ahorrado
     seleccion:
-      'id, nombre, categoria, fecha_limite AS fecha, monto_objetivo AS objetivo, monto_ahorrado AS ahorrado'
+      'id, nombre, categoria, fecha_limite AS fecha, monto_objetivo AS objetivo, monto_ahorrado AS ahorrado, progreso'
   }
 };
 
@@ -69,7 +82,9 @@ const listar = async (cfg, usuarioId) => {
   return resultado.rows;
 };
 
-// Inserta un registro del usuario y devuelve la fila creada
+// Inserta un registro del usuario y devuelve la fila creada.
+// Todo ocurre en una transacción: si un paso falla, no se guarda nada a medias
+// (por ejemplo, un ahorro registrado sin sumarse a su meta).
 const crear = async (cfg, usuarioId, datos) => {
   const claves = Object.keys(cfg.campos);
   const columnas = claves.map((clave) => cfg.campos[clave]);
@@ -79,18 +94,34 @@ const crear = async (cfg, usuarioId, datos) => {
     if (cfg.numericos.includes(clave) && valor !== null) valor = Number(valor);
     return valor;
   });
-  const marcadores = claves.map((_, i) => `$${i + 2}`);
 
-  const resultado = await db.query(
-    `INSERT INTO ${cfg.tabla} (usuario_id, ${columnas.join(', ')}, fecha_creacion)
-     VALUES ($1, ${marcadores.join(', ')}, NOW())
-     RETURNING ${cfg.seleccion}`,
-    [usuarioId, ...valores]
-  );
+  const cliente = await db.connect();
+  try {
+    await cliente.query('BEGIN');
 
-  if (cfg.despuesDeCrear) await cfg.despuesDeCrear(usuarioId, datos);
+    // Columnas adicionales calculadas por el recurso (p. ej. meta_id en ahorros)
+    const extra = cfg.antesDeCrear ? await cfg.antesDeCrear(cliente, usuarioId, datos) : {};
+    const todasColumnas = [...columnas, ...Object.keys(extra)];
+    const todosValores = [...valores, ...Object.values(extra)];
+    const marcadores = todosValores.map((_, i) => `$${i + 2}`);
 
-  return resultado.rows[0];
+    const resultado = await cliente.query(
+      `INSERT INTO ${cfg.tabla} (usuario_id, ${todasColumnas.join(', ')}, fecha_creacion)
+       VALUES ($1, ${marcadores.join(', ')}, NOW())
+       RETURNING ${cfg.seleccion}`,
+      [usuarioId, ...todosValores]
+    );
+
+    if (cfg.despuesDeCrear) await cfg.despuesDeCrear(cliente, usuarioId, datos, extra);
+
+    await cliente.query('COMMIT');
+    return resultado.rows[0];
+  } catch (error) {
+    await cliente.query('ROLLBACK');
+    throw error;
+  } finally {
+    cliente.release();
+  }
 };
 
 const borrarTodos = async (cfg, usuarioId) => {

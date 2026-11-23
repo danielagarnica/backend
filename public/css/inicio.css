@@ -1,0 +1,191 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background-color: #eef5ea;
+  min-height: 100vh;
+}
+
+/* El ancho del contenido y todos los tamaños están en rem,
+   así todo crece junto con la pantalla (ver html en navbar.css) */
+.container {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+/* ---------- BIENVENIDA ---------- */
+.welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.welcome h1 { color: #1f3d28; font-size: 2.2rem; }
+.welcome p { color: #6a8a74; font-size: 1rem; margin-top: 0.2rem; }
+
+.balance {
+  background-color: #dcebd9;
+  border: 1px solid #c3dcc0;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.9rem;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+}
+.balance span { font-size: 0.75rem; color: #4b5d50; }
+.balance strong { font-size: 1.6rem; color: #2e5c3e; }
+
+/* ---------- BANNER ---------- */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background-color: #fff8dc;
+  border: 1px solid #f3dd8a;
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.banner-img { width: 5.5rem; height: auto; }
+.banner-text { flex: 1; }
+.banner-text h2 { font-size: 1.15rem; color: #b45309; margin-bottom: 0.3rem; }
+.banner-text p { font-size: 0.95rem; color: #c2410c; line-height: 1.4; }
+
+.btn-banner {
+  background-color: #2e5c3e;
+  color: white;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: 0.6rem;
+  white-space: nowrap;
+}
+.btn-banner:hover { background-color: #244a32; }
+
+/* ---------- TARJETAS RESUMEN ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  padding: 1.3rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.stat-card small { font-size: 0.8rem; letter-spacing: 0.5px; }
+.stat-card strong { font-size: 2rem; }
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.5rem;
+}
+.ver {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.7rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.stat-ingresos { background-color: #7fb07f; color: white; }
+.stat-ingresos .ver { background-color: rgba(0,0,0,0.15); color: white; }
+
+.stat-gastos { background-color: #ff8f8f; color: white; }
+.stat-gastos .ver { background-color: white; color: #d9534f; }
+
+.stat-metas { background-color: #eaf1ff; border: 1px solid #cfdcff; color: #2563eb; }
+.stat-metas .ver { background-color: #cfdcff; color: #2563eb; }
+
+.stat-ahorros { background-color: #f3efff; border: 1px solid #ddd3ff; color: #7c3aed; }
+.stat-ahorros .ver { background-color: #ddd3ff; color: #7c3aed; }
+
+/* ---------- PANELES ---------- */
+.panels {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+.panel {
+  background: white;
+  border: 1px solid #dcebd9;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.3rem;
+  border-bottom: 1px solid #eef5ea;
+}
+.panel-header h3 { font-size: 1.05rem; color: #1f3d28; font-weight: 500; }
+
+.count {
+  background-color: #dcebd9;
+  color: #2e5c3e;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 0.8rem;
+  margin-left: 0.4rem;
+}
+
+.btn-small {
+  background-color: #2e5c3e;
+  color: white;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.45rem 1rem;
+  border-radius: 0.5rem;
+}
+.btn-small:hover { background-color: #244a32; }
+
+.panel-body { padding: 1.2rem; min-height: 12rem; }
+
+/* ---------- ESTADO VACÍO ---------- */
+.panel-body.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.4rem;
+}
+.empty-img { width: 7.5rem; height: auto; margin-bottom: 0.5rem; }
+.empty-title { font-size: 0.95rem; color: #6a8a74; }
+.empty-sub { font-size: 0.8rem; color: #a3bfa8; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .container { padding: 1.5rem 1rem; }
+  .stats { grid-template-columns: 1fr; }
+  .panels { grid-template-columns: 1fr; }
+  .welcome h1 { font-size: 1.7rem; }
+  .balance { text-align: left; width: 100%; }
+
+  .banner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .btn-banner { width: 100%; text-align: center; }
+}

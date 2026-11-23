@@ -1,0 +1,349 @@
+/* Ajustes generales del fondo y contenedor */
+body {
+  background-color: #f2fbf4; /* Color verde claro del diseño */
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Encabezado */
+.section-header h1 {
+  color: #1a4a2a;
+  font-size: 3rem;
+  margin-bottom: 0.2rem;
+  font-weight: normal;
+}
+
+.section-header p {
+  color: #4a7c59;
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+/* Layout Principal con Grid */
+.ahorros-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* --- COLUMNA IZQUIERDA --- */
+.left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Tarjeta Total Ahorrado (Morada) */
+.purple-card {
+  background-color: #8b5cf6;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-total-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-icon {
+  font-size: 2.5rem;
+}
+
+.card-text-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.purple-card .card-label {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.purple-card .card-amount {
+  font-size: 2rem;
+  font-weight: normal;
+}
+
+/* Tarjeta Tasa de Ahorro */
+.card-progreso {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.card-progreso .card-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.progress-info {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.progress-info .percent {
+  font-size: 2rem;
+  font-weight: normal;
+  color: #8b5cf6;
+}
+
+.progress-info .percent-text {
+  color: #a7f3d0; 
+  font-size: 0.875rem;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 12px;
+  background-color: #ede9fe;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #8b5cf6;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.progress-hint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Contenedor de la Mascota */
+.mascot-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.mascot-img {
+  max-width: 220px;
+  height: auto;
+}
+
+/* Consejo PocketPet */
+.purple-tip {
+  background-color: #faf5ff;
+  border: 1px solid #e9d5ff;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.purple-tip .tip-title {
+  color: #8b5cf6;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.purple-tip .tip-text {
+  color: #8b5cf6;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* --- COLUMNA DERECHA --- */
+.right-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.purple-header {
+  background-color: #8b5cf6;
+  color: white;
+  padding: 1.5rem;
+}
+
+.purple-header h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: normal;
+}
+
+.purple-header p {
+  margin: 0;
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.ahorros-form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+label {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #6b7280;
+}
+
+input, textarea, select {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus, textarea:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.btn-submit-ahorro {
+  background-color: #8b5cf6;
+  color: white;
+  padding: 0.875rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.btn-submit-ahorro:hover {
+  background-color: #7c3aed;
+}
+
+/* Diseño Adaptable (Móviles) */
+@media (max-width: 768px) {
+  .ahorros-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- HISTORIAL DE AHORROS --- */
+.history-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.history-header h3 {
+  margin: 0;
+  color: #4b5563;
+  font-size: 1.1rem;
+}
+
+/* Botón para reiniciar datos */
+.btn-reset {
+  background: none;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.btn-reset:hover {
+  background-color: #ef4444;
+  color: white;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+/* Diseño de cada item del historial */
+.history-item {
+  background-color: #faf5ff; /* Fondo morado muy claro */
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-item-name {
+  color: #4b5563;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.history-item-date {
+  color: #a78bfa; /* Morado para la fecha */
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.history-item-amount {
+  color: #8b5cf6;
+  font-weight: bold;
+  font-size: 1rem;
+}

@@ -1,8 +1,6 @@
-# tecnologias_template_backend
-
 # PocketPet - Backend
 
-API en Node.js para PocketPet. Conecta la página web con la base de datos de Supabase (PostgreSQL).
+Servidor en Node.js para PocketPet. Entrega la página web (carpeta `public/`) y la API, y se conecta con la base de datos de Supabase (PostgreSQL). Página y API viven en el mismo dominio, lo que permite usar una cookie de sesión segura.
 
 ## Requisitos
 
@@ -46,6 +44,8 @@ API en Node.js para PocketPet. Conecta la página web con la base de datos de Su
 
    Debe aparecer `Conectado a la base de datos (Supabase)`. La terminal queda ocupada mientras el servidor funciona; para detenerlo usa `Ctrl+C`.
 
+6. Abre **http://localhost:3000** en el navegador. No abras los `.html` con doble clic: la página debe venir del servidor para que funcione la sesión.
+
 ## Variables de entorno
 
 | Variable | Para qué sirve |
@@ -53,15 +53,32 @@ API en Node.js para PocketPet. Conecta la página web con la base de datos de Su
 | `DATABASE_URL` | Conexión a la base de datos de Supabase |
 | `JWT_SECRET` | Clave para firmar las sesiones de los usuarios |
 | `PORT` | Puerto del servidor (opcional, por defecto 3000) |
+| `NODE_ENV` | `production` en Render: la cookie se marca `Secure` (solo HTTPS). En local no se define |
 
 ## Rutas de la API
 
-Todas las rutas, excepto las de `/api/auth`, requieren iniciar sesión. La página envía el token en el encabezado `Authorization: Bearer TOKEN`.
+Todas las rutas, excepto `/api/auth/*` y `/api/health`, requieren iniciar sesión.
+
+### Sesión con cookie
+
+Al registrarse o iniciar sesión, el servidor responde con la cookie `pp_sesion` (un token JWT válido por 7 días):
+
+| Atributo | Para qué |
+|---|---|
+| `HttpOnly` | El JavaScript de la página no puede leerla: un script malicioso (XSS) no puede robar la sesión |
+| `SameSite=Lax` | El navegador no la envía en peticiones POST/DELETE que vengan de otros sitios (CSRF) |
+| `Secure` | Solo viaja por HTTPS (en producción) |
+| `Path=/`, `Max-Age=604800` | Válida en todo el sitio durante 7 días |
+
+El navegador la envía sola en cada petición; el frontend no guarda ningún token. Además, el servidor rechaza peticiones que modifican datos si su encabezado `Origin` es de otro dominio, y redirige a `login.html` cuando alguien abre una página privada sin sesión.
 
 | Método | Ruta | Qué hace |
 |---|---|---|
 | POST | `/api/auth/registro` | Crea una cuenta (nombre, email, password) |
 | POST | `/api/auth/login` | Inicia sesión (email, password) |
+| POST | `/api/auth/logout` | Cierra la sesión (borra la cookie) |
+| GET | `/api/auth/me` | Devuelve el usuario con sesión activa |
+| GET | `/api/health` | Comprueba que el servidor y la base de datos respondan (no requiere sesión) |
 | GET | `/api/ingresos` | Lista los ingresos del usuario |
 | POST | `/api/ingresos` | Crea un ingreso (tipo, monto, fecha, notas) |
 | GET | `/api/gastos` | Lista los gastos del usuario |
@@ -78,16 +95,61 @@ Todas las rutas, excepto las de `/api/auth`, requieren iniciar sesión. La pági
 ## Estructura
 
 ```
-backend-1/
-├── server.js               # Servidor y CORS
-├── database/connection.js  # Conexión a Supabase
+backend/
+├── server.js                      # Servidor: API, archivos estáticos y seguridad
+├── .env.example                   # Plantilla de variables de entorno (el .env real no se sube)
+├── render.yaml                    # Despliegue en Render
+├── .github/workflows/keepalive.yml # Ping cada 3 días para que Supabase no se pause
+├── public/                        # Página web (HTML, CSS, JS, imágenes)
+├── database/
+│   ├── connection.js              # Conexión a Supabase (pool de pg)
+│   ├── schema.sql                 # Tablas, índices y seguridad (PostgreSQL)
+│   └── setup.js                   # Aplica schema.sql: npm run db:setup
 ├── routes/
-│   ├── auth.routes.js      # Registro y login
-│   └── recursos.routes.js  # Ingresos, gastos, ahorros y metas
+│   ├── auth.routes.js             # Registro, login, logout y usuario actual
+│   └── recursos.routes.js         # Ingresos, gastos, ahorros y metas
+├── controllers/
+│   ├── auth.controller.js         # Validación y respuesta de registro/login
+│   └── recursos.controller.js     # Validación y respuesta del CRUD
+├── models/
+│   ├── usuario.model.js           # Consultas a la tabla usuarios
+│   └── recurso.model.js           # Consultas genéricas a ingresos/gastos/ahorros/metas
 └── utils/
-    ├── auth.js             # Creación y lectura de tokens
-    └── http.js             # Funciones auxiliares de respuesta
+    ├── auth.js                    # Cookie de sesión (crear, leer, borrar)
+    ├── http.js                    # Funciones auxiliares de respuesta
+    └── static.js                  # Entrega public/ y protege las páginas privadas
 ```
+
+## Base de datos
+
+El esquema está en [`database/schema.sql`](database/schema.sql) y sigue el diagrama `Modelo de datos.jpeg` del repositorio `POCKETPET`.
+
+| Tabla | Relación | Notas |
+|---|---|---|
+| `usuarios` | — | `email` único y en minúsculas; la contraseña se guarda solo como hash bcrypt |
+| `categorias` | 1 — N `gastos` | Catálogo fijo; `codigo` coincide con los valores del formulario de gastos |
+| `ingresos` | `usuarios` 1 — N | |
+| `gastos` | `usuarios` 1 — N, `categorias` 1 — N | `categoria` es FK a `categorias.codigo` |
+| `metas` | `usuarios` 1 — N | `progreso` (0–100) se calcula solo |
+| `ahorros` | `usuarios` 1 — N, `metas` 1 — N | `meta_id` se llena si el nombre del ahorro coincide con una meta |
+
+Todas las tablas tienen RLS activado y sin permisos para `anon`/`authenticated`: los datos solo se leen a través de este backend, nunca directamente con la clave pública de Supabase.
+
+**Probar la conexión:** `npm run db:check`. Comprueba `DATABASE_URL`, explica el error si no conecta y compara las tablas de Supabase con las que usa el backend (no modifica nada).
+
+> Usa siempre la URL del **Session pooler** (`…pooler.supabase.com:5432`, usuario `postgres.<id-del-proyecto>`). La conexión directa `db.<id>.supabase.co` solo funciona con IPv6 y falla en Render y en muchas redes.
+
+**Crear las tablas** (una de las dos opciones; se puede repetir sin problema):
+
+- Con el `.env` configurado: `npm run db:setup`
+- O pegando el contenido de `database/schema.sql` en el SQL Editor de Supabase.
+
+**Actualizar una base que ya existía:** las tablas originales de Supabase no tenían `categorias`, `metas.progreso` ni `ahorros.meta_id`. La migración [`database/migrations/001_completar_esquema.sql`](database/migrations/001_completar_esquema.sql) las agrega sin borrar datos:
+
+- `npm run db:migrate -- --prueba`: la ejecuta y la deshace (no cambia nada), para comprobar.
+- `npm run db:migrate`: la aplica. Todo corre en una transacción: si algo falla, no se aplica nada.
+
+> `schema.sql` es para una base **nueva**: si las tablas ya existen, no las modifica (usa `CREATE TABLE IF NOT EXISTS`). Para una base existente usa las migraciones.
 
 ## Trabajar en equipo
 
@@ -120,8 +182,23 @@ ALTER TABLE ingresos ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY;
 
 ## Página web
 
-La página está en el repositorio `POCKETPET`, rama `conexion-backend`. Para usarla en local:
+La página está en `public/`. Se copió del repositorio `POCKETPET` (rama `conexion-backend`) y a partir de ahora **se edita aquí**. Para verla en local, arranca el servidor y abre http://localhost:3000.
 
-1. Arranca este backend (`npm start`).
-2. Abre `login.html` en el navegador.
-3. Si el backend corre en otra dirección o puerto, cambia `API_URL` en `js/storage.js`.
+## Despliegue en Render
+
+1. En [render.com](https://render.com), crea una cuenta con GitHub.
+2. **New > Blueprint** y selecciona este repositorio y la rama de trabajo. Render lee `render.yaml`.
+3. Escribe el valor de `DATABASE_URL` cuando lo pida. `JWT_SECRET` se genera solo y `NODE_ENV` ya viene en `production`.
+4. Al terminar, la página queda en `https://pocketpet.onrender.com` (o el nombre que asigne Render).
+
+El plan gratuito se duerme tras 15 minutos sin visitas; la primera visita después tarda cerca de un minuto.
+
+### Evitar que Supabase se pause
+
+`.github/workflows/keepalive.yml` llama a `/api/health` cada 3 días. Esa ruta hace una consulta a la base, lo que cuenta como actividad para Supabase. Para activarlo:
+
+1. En GitHub: **Settings > Secrets and variables > Actions > Variables > New repository variable**.
+2. Nombre `HEALTH_URL`, valor `https://TU-APP.onrender.com/api/health`.
+3. En la pestaña **Actions**, ejecútalo una vez a mano (*Run workflow*) para comprobarlo.
+
+GitHub solo ejecuta las tareas programadas desde la **rama por defecto** del repositorio, así que este archivo debe estar en esa rama.

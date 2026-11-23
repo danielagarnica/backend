@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingresos - PocketPet</title>
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/ingresos.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+
+    <div class="navbar-left">
+      <img src="assets/mascota.png" alt="PocketPet" class="nav-logo">
+      <span class="nav-brand">POCKETPET</span>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="inicio.html" class="nav-link">🏠 Inicio</a></li>
+      <li><a href="ingresos.html" class="nav-link active">$ Ingresos</a></li>
+      <li><a href="gastos.html" class="nav-link">🛒 Gastos</a></li>
+      <li><a href="metas.html" class="nav-link">🎯 Metas</a></li>
+      <li><a href="ahorros.html" class="nav-link">🏦 Ahorros</a></li>
+    </ul>
+
+    <div class="navbar-right">
+      <details class="user-menu">
+        <summary class="user-btn">
+          <span class="user-avatar">U</span>
+          <span class="user-name">Usuario</span>
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="user-dropdown">
+          <a href="index.html" class="logout">Cerrar sesión</a>
+        </div>
+      </details>
+
+      <label for="menu-toggle" class="hamburger" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </label>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-container">
+
+    <!-- Encabezado de la Sección -->
+    <header class="section-header">
+      <h1>INGRESOS</h1>
+      <p>Registra todas tus fuentes de ingreso</p>
+    </header>
+
+    <!-- Disposición en 2 Columnas -->
+    <div class="ingresos-grid">
+
+      <!-- COLUMNA IZQUIERDA: Resumen + Mascota + Consejo -->
+      <div class="left-col">
+        
+        <!-- Tarjeta Total de Ingresos -->
+        <div class="card-total-ingresos">
+          <span class="card-label">💰 TOTAL DE INGRESOS</span>
+          <strong class="card-amount">$0</strong>
+        </div>
+
+        <!-- Mascota con Alcancía -->
+        <div class="mascot-container">
+          <img src="assets/mascota_ahorrando.png" alt="Mascota con alcancía" class="mascot-img">
+        </div>
+
+        <!-- Caja de Consejo -->
+        <div class="tip-card">
+          <div class="tip-title">💡 Consejo PocketPet</div>
+          <p class="tip-text">
+            Registrar todos tus ingresos te ayuda a tener una visión clara de tu capacidad financiera real.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- COLUMNA DERECHA: Formulario de Registro + Historial -->
+      <div class="right-col">
+        
+        <div class="form-card">
+          <div class="form-header">
+            <h2>Registrar Ingreso</h2>
+            <p>Completa los datos de tu ingreso</p>
+          </div>
+
+          <!-- Se eliminó el action para que JavaScript maneje el guardado -->
+          <form id="ingreso-form" class="ingresos-form">
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="tipo-ingreso">Tipo de ingreso *</label>
+                <input type="text" id="tipo-ingreso" placeholder="Describa el tipo" required>
+              </div>
+
+              <div class="form-group">
+                <label for="monto-ingreso">Monto (COP) *</label>
+                <input type="number" id="monto-ingreso" placeholder="0.00" step="0.01" min="0" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <!-- Etiqueta de fecha corregida -->
+              <label for="fecha-ingreso">Fecha *</label>
+              <input type="date" id="fecha-ingreso" required>
+            </div>
+
+            <div class="form-group">
+              <label for="notas-ingreso">Notas (opcional)</label>
+              <textarea id="notas-ingreso" rows="3" placeholder="Descripción adicional..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-ingreso">Registrar Ingreso</button>
+          </form>
+        </div>
+
+        <!-- Contenedor Historial de Ingresos ubicado dentro de la columna derecha -->
+        <div class="history-card">
+          <div class="history-header">
+            <h3>Historial de Ingresos</h3>
+            <button id="btn-reset-ingresos" class="btn-reset" type="button">Reiniciar Datos</button>
+          </div>
+          <div id="lista-historial-ingresos" class="history-list"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+  
+  <script src="js/storage.js"></script>
+<script src="js/ingresos.js"></script>
+
+</body>
+</html>

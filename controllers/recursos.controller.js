@@ -23,7 +23,22 @@ const crear = async (req, res, cfg, usuarioId) => {
     }
   }
 
-  const creado = await recursoModel.crear(cfg, usuarioId, datos);
+  let creado;
+  try {
+    creado = await recursoModel.crear(cfg, usuarioId, datos);
+  } catch (error) {
+    // Restricciones de la base de datos (ver database/schema.sql)
+    if (error.code === '23503') {
+      return enviarJson(res, 400, { error: 'Algún valor no es válido (por ejemplo, la categoría)' });
+    }
+    if (error.code === '23514') {
+      return enviarJson(res, 400, { error: 'Los montos deben ser mayores que cero y los textos no pueden estar vacíos' });
+    }
+    if (error.code === '22007' || error.code === '22008') {
+      return enviarJson(res, 400, { error: 'La fecha no es válida' });
+    }
+    throw error;
+  }
   enviarJson(res, 201, creado);
 };
 

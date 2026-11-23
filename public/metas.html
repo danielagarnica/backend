@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metas - PocketPet</title>
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/metas.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+
+    <div class="navbar-left">
+      <img src="assets/mascota.png" alt="PocketPet" class="nav-logo">
+      <span class="nav-brand">POCKETPET</span>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="inicio.html" class="nav-link">🏠 Inicio</a></li>
+      <li><a href="ingresos.html" class="nav-link">$ Ingresos</a></li>
+      <li><a href="gastos.html" class="nav-link">🛒 Gastos</a></li>
+      <li><a href="metas.html" class="nav-link active">🎯 Metas</a></li>
+      <li><a href="ahorros.html" class="nav-link">🏦 Ahorros</a></li>
+    </ul>
+
+    <div class="navbar-right">
+      <details class="user-menu">
+        <summary class="user-btn">
+          <span class="user-avatar">U</span>
+          <span class="user-name">Usuario</span>
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="user-dropdown">
+          <a href="index.html" class="logout">Cerrar sesión</a>
+        </div>
+      </details>
+
+      <label for="menu-toggle" class="hamburger" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </label>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container">
+    <header class="section-header">
+      <h1>METAS</h1>
+      <p>Define tus objetivos de ahorro para alcanzar tus sueños</p>
+    </header>
+
+    <div class="metas-grid">
+      <!-- COLUMNA IZQUIERDA -->
+      <div class="left-col">
+        <div class="card-metas-activas">
+          <span class="card-label">🎯 METAS ACTIVAS</span>
+          <!-- ID crítico para que JS actualice el número -->
+          <strong class="card-amount" id="metas-activas-total">0</strong>
+        </div>
+
+        <div class="mascot-container">
+          <img src="assets/mascota-viaje.png" alt="Mascota exploradora con maleta" class="mascot-img">
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-title">💡 Consejo PocketPet</div>
+          <p class="tip-text">
+            Las metas específicas y con fecha límite tienen 3 veces más probabilidad de cumplirse. ¡Sé preciso!
+          </p>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA -->
+      <div class="right-col">
+        <div class="form-card">
+          <div class="form-header">
+            <h2>Nueva Meta</h2>
+            <p>Define tu próximo objetivo financiero</p>
+          </div>
+
+          <!-- Formulario sin atributo action -->
+          <form id="metas-form" class="metas-form">
+            <div class="form-group">
+              <label for="nombre-meta">Nombre de la meta *</label>
+              <input type="text" id="nombre-meta" placeholder="Ej: Fondo de emergencia, Viaje a Europa..." required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="categoria-meta">Categoría *</label>
+                <select id="categoria-meta" required>
+                  <option value="" disabled selected>Selecciona una categoría</option>
+                  <option value="viajes">Viajes</option>
+                  <option value="educacion">Educación</option>
+                  <option value="tecnologia">Tecnología / Compras</option>
+                  <option value="emergencia">Fondo de Emergencia</option>
+                  <option value="pareja">Pareja</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="fecha-limite">Fecha límite *</label>
+                <input type="date" id="fecha-limite" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="monto-objetivo">Monto objetivo (COP) *</label>
+                <input type="number" id="monto-objetivo" placeholder="0" step="1" min="0" required>
+              </div>
+
+              <div class="form-group">
+                <label for="monto-ahorrado">Monto ahorrado (COP)</label>
+                <input type="number" id="monto-ahorrado" placeholder="0 (opcional)" step="1" min="0">
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit-meta">Guardar Meta</button>
+          </form>
+        </div>
+
+        <!-- Contenedor Historial de Metas con IDs críticos -->
+        <div class="history-card">
+          <div class="history-header">
+            <h3>Metas Registradas</h3>
+            <button id="btn-reset-metas" class="btn-reset" type="button">Reiniciar Datos</button>
+          </div>
+          <div id="lista-historial-metas" class="history-list"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script src="js/metas.js"></script>
+</body>
+</html>

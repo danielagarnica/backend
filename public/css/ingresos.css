@@ -1,0 +1,286 @@
+/* RESET & BASE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: #eef5ea;
+  min-height: 100vh;
+}
+
+/* CONTENEDOR PRINCIPAL ESCALABLE EN REM (con márgenes laterales) */
+.main-container {
+  width: 100%;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+/* ---------- ENCABEZADO DE SECCIÓN ---------- */
+.section-header {
+  margin-bottom: 1.8rem;
+}
+
+.section-header h1 {
+  color: #1f3d28;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.section-header p {
+  color: #6a8a74;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+}
+
+/* ---------- GRID DE 2 COLUMNAS ---------- */
+.ingresos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 1.8rem;
+  align-items: start;
+}
+
+/* ---------- COLUMNA IZQUIERDA ---------- */
+.left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* Tarjeta Total de Ingresos */
+.card-total-ingresos {
+  background-color: #7fb07f;
+  color: white;
+  padding: 1.3rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.card-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.card-amount {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Mascota con Alcancía */
+.mascot-container {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.mascot-img {
+  width: 11.5rem;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Caja de Consejo PocketPet */
+.tip-card {
+  background-color: #dcebd9;
+  border: 1px solid #c3dcc0;
+  padding: 1.2rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tip-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1f3d28;
+}
+
+.tip-text {
+  font-size: 0.85rem;
+  color: #4b5d50;
+  line-height: 1.4;
+}
+
+/* ---------- COLUMNA DERECHA (FORMULARIO) ---------- */
+.form-card {
+  background: white;
+  border: 1px solid #dcebd9;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.form-header {
+  background-color: #7fb07f;
+  color: white;
+  padding: 1.2rem 1.5rem;
+}
+
+.form-header h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.form-header p {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-top: 0.2rem;
+}
+
+/* Formulario */
+.ingresos-form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1f3d28;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #c3dcc0;
+  border-radius: 0.6rem;
+  font-size: 0.95rem;
+  outline: none;
+  background-color: #fafdf9;
+  color: #1f3d28;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #2e5c3e;
+  background-color: #ffffff;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+/* Botón Guardar / Registrar */
+.btn-submit-ingreso {
+  background-color: #7fb07f;
+  color: white;
+  border: none;
+  padding: 0.85rem;
+  border-radius: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-submit-ingreso:hover {
+  background-color: #699869;
+}
+
+/* ---------- HISTORIAL DE INGRESOS ---------- */
+.history-card {
+  background-color: white;
+  border-radius: 0.8rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.history-header h3 {
+  margin: 0;
+  color: #4b5563;
+  font-size: 1.1rem;
+}
+
+.btn-reset {
+  background: none;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+.btn-reset:hover {
+  background-color: #ef4444;
+  color: white;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.history-item {
+  background-color: #f0fdf4; /* Fondo verde muy claro para ingresos */
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-item-info { display: flex; flex-direction: column; }
+.history-item-name { color: #4b5563; font-weight: bold; font-size: 0.9rem; }
+.history-item-date { color: #10b981; font-size: 0.8rem; margin-top: 0.2rem; }
+.history-item-amount { color: #059669; font-weight: bold; font-size: 1rem; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+  .ingresos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header h1 {
+    font-size: 1.8rem;
+  }
+}
