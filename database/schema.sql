@@ -114,16 +114,17 @@ CREATE TABLE IF NOT EXISTS public.ahorros (
 );
 
 -- ---------------------------------------------------------------------
--- ÍNDICES (los del diagrama). Postgres no indexa las FK por sí solo.
+-- ÍNDICES (los del diagrama, con los nombres que ya usa la base en Supabase).
+-- Postgres no indexa las FK por sí solo.
 -- ---------------------------------------------------------------------
-CREATE INDEX IF NOT EXISTS idx_ingreso_usuario   ON public.ingresos (usuario_id);
-CREATE INDEX IF NOT EXISTS idx_gasto_usuario     ON public.gastos   (usuario_id);
-CREATE INDEX IF NOT EXISTS idx_gasto_categoria   ON public.gastos   (categoria);
-CREATE INDEX IF NOT EXISTS idx_meta_usuario      ON public.metas    (usuario_id);
-CREATE INDEX IF NOT EXISTS idx_ahorro_usuario    ON public.ahorros  (usuario_id);
-CREATE INDEX IF NOT EXISTS idx_ahorro_meta       ON public.ahorros  (meta_id);
+CREATE INDEX IF NOT EXISTS idx_ingresos_usuario  ON public.ingresos (usuario_id);
+CREATE INDEX IF NOT EXISTS idx_gastos_usuario    ON public.gastos   (usuario_id);
+CREATE INDEX IF NOT EXISTS idx_gastos_categoria  ON public.gastos   (categoria);
+CREATE INDEX IF NOT EXISTS idx_metas_usuario     ON public.metas    (usuario_id);
+CREATE INDEX IF NOT EXISTS idx_ahorros_usuario   ON public.ahorros  (usuario_id);
+CREATE INDEX IF NOT EXISTS idx_ahorros_meta      ON public.ahorros  (meta_id);
 -- Para buscar la meta por nombre al registrar un ahorro
-CREATE INDEX IF NOT EXISTS idx_meta_usuario_nombre
+CREATE INDEX IF NOT EXISTS idx_metas_usuario_nombre
   ON public.metas (usuario_id, lower(trim(nombre)));
 
 -- ---------------------------------------------------------------------

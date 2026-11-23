@@ -144,7 +144,12 @@ Todas las tablas tienen RLS activado y sin permisos para `anon`/`authenticated`:
 - Con el `.env` configurado: `npm run db:setup`
 - O pegando el contenido de `database/schema.sql` en el SQL Editor de Supabase.
 
-> Si las tablas ya existían con otra estructura, `schema.sql` **no las modifica** (usa `CREATE TABLE IF NOT EXISTS`). Revisa las columnas en el Table Editor antes de usarlo sobre una base con datos.
+**Actualizar una base que ya existía:** las tablas originales de Supabase no tenían `categorias`, `metas.progreso` ni `ahorros.meta_id`. La migración [`database/migrations/001_completar_esquema.sql`](database/migrations/001_completar_esquema.sql) las agrega sin borrar datos:
+
+- `npm run db:migrate -- --prueba`: la ejecuta y la deshace (no cambia nada), para comprobar.
+- `npm run db:migrate`: la aplica. Todo corre en una transacción: si algo falla, no se aplica nada.
+
+> `schema.sql` es para una base **nueva**: si las tablas ya existen, no las modifica (usa `CREATE TABLE IF NOT EXISTS`). Para una base existente usa las migraciones.
 
 ## Trabajar en equipo
 
