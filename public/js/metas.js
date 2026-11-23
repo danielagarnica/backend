@@ -45,9 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function actualizarInterfaz() {
-    if (metasActivasElement) metasActivasElement.textContent = metas.length;
+    // Solo cuentan las metas sin cumplir y con fecha límite vigente
+    if (metasActivasElement) metasActivasElement.textContent = metas.filter(esMetaActiva).length;
     renderizarHistorial();
   }
+
+  // La fecha límite no puede ser anterior a hoy
+  const campoFecha = document.getElementById('fecha-limite');
+  if (campoFecha) campoFecha.min = fechaHoy();
 
   async function cargarMetas() {
     try {
@@ -63,12 +68,16 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
 
       const nuevaMeta = {
-        nombre: document.getElementById('nombre-meta').value,
+        nombre: document.getElementById('nombre-meta').value.trim(),
         categoria: document.getElementById('categoria-meta').value,
         fecha: document.getElementById('fecha-limite').value,
         objetivo: parseFloat(document.getElementById('monto-objetivo').value),
         ahorrado: parseFloat(document.getElementById('monto-ahorrado').value) || 0
       };
+
+      if (!nuevaMeta.nombre) return alert('⚠️ Escribe un nombre para la meta.');
+      if (nuevaMeta.fecha < fechaHoy()) return alert('⚠️ La fecha límite no puede estar en el pasado.');
+      if (!(nuevaMeta.objetivo > 0)) return alert('⚠️ El monto objetivo debe ser mayor que $0.');
 
       try {
         await apiFetch('/api/metas', { method: 'POST', body: JSON.stringify(nuevaMeta) });

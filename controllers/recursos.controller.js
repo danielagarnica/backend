@@ -27,6 +27,10 @@ const crear = async (req, res, cfg, usuarioId) => {
   try {
     creado = await recursoModel.crear(cfg, usuarioId, datos);
   } catch (error) {
+    // Reglas de negocio (saldo insuficiente, meta inválida, fecha pasada...)
+    if (error instanceof recursoModel.ErrorValidacion) {
+      return enviarJson(res, error.estado, { error: error.message });
+    }
     // Restricciones de la base de datos (ver database/schema.sql)
     if (error.code === '23503') {
       return enviarJson(res, 400, { error: 'Algún valor no es válido (por ejemplo, la categoría)' });

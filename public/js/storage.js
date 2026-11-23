@@ -12,7 +12,8 @@ const formatCOP = (valor) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
-    minimumFractionDigits: 0
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
   }).format(valor);
 
 // Evita que un texto escrito por el usuario se ejecute como HTML
@@ -24,6 +25,22 @@ const escapar = (texto) =>
     '"': '&quot;',
     "'": '&#39;'
   }[c]));
+
+// ---------- Utilidades de datos ----------
+const sumarMontos = (lista) => lista.reduce((total, item) => total + (Number(item.monto) || 0), 0);
+
+// Fecha de hoy en formato AAAA-MM-DD, según la hora local
+function fechaHoy() {
+  const hoy = new Date();
+  hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
+  return hoy.toISOString().slice(0, 10);
+}
+
+// Una meta está activa si no se ha cumplido y su fecha límite no ha pasado
+const esMetaActiva = (meta) => Number(meta.ahorrado || 0) < Number(meta.objetivo) && meta.fecha >= fechaHoy();
+
+// Compara en centavos para evitar errores de redondeo con decimales
+const superaSaldo = (monto, saldo) => Math.round(monto * 100) > Math.round(saldo * 100);
 
 // ---------- Llamadas al backend ----------
 async function apiFetch(ruta, opciones = {}) {
@@ -86,6 +103,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { usuario } = await apiFetch('/api/auth/me');
     if (nombreEl) nombreEl.textContent = usuario.nombre;
     if (avatarEl) avatarEl.textContent = usuario.nombre.charAt(0).toUpperCase();
+    const saludoEl = document.getElementById('saludo-usuario');
+    if (saludoEl) saludoEl.textContent = `¡Bienvenido, ${usuario.nombre.split(' ')[0]}!`;
   } catch (error) {
     // Sin sesión: apiFetch ya redirige al login
   }

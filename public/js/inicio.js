@@ -13,12 +13,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     const totalAhorrado = sumar(ahorros);
     const totalIngresado = sumar(ingresos);
     const totalGastado = sumar(gastos);
-    const balanceActual = totalIngresado - totalGastado;
+    const balanceActual = totalIngresado - totalGastado - totalAhorrado; // dinero aún disponible
 
     if (totalAhorrosElement) totalAhorrosElement.textContent = formatCOP(totalAhorrado);
     if (totalIngresosElement) totalIngresosElement.textContent = formatCOP(totalIngresado);
     if (totalGastosElement) totalGastosElement.textContent = formatCOP(totalGastado);
-    if (totalMetasElement) totalMetasElement.textContent = metas.length;
+    if (totalMetasElement) totalMetasElement.textContent = metas.filter(esMetaActiva).length;
+
+    // Cuando ya hay ingresos, el mensaje de bienvenida deja de pedir el primer ingreso
+    if (ingresos.length > 0) {
+      const subtitulo = document.querySelector('.welcome p');
+      const bannerTitulo = document.querySelector('.banner-text h2');
+      const bannerTexto = document.querySelector('.banner-text p');
+      const bannerBoton = document.querySelector('.btn-banner');
+      if (subtitulo) subtitulo.textContent = 'Este es el resumen de tus finanzas.';
+      if (bannerTitulo) bannerTitulo.textContent = '¡Vas muy bien! Sigue así 💪';
+      if (bannerTexto) bannerTexto.textContent = 'Registra tus gastos y destina parte de tu dinero a tus metas de ahorro.';
+      if (bannerBoton) { bannerBoton.textContent = 'Registrar Ahorro'; bannerBoton.href = 'ahorros.html'; }
+    }
 
     if (balanceActualElement) {
       balanceActualElement.textContent = formatCOP(balanceActual);

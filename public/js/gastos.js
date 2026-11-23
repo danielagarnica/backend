@@ -10,8 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let gastos = [];
   let ingresos = [];
+  let ahorros = [];
 
-  const sumar = (lista) => lista.reduce((total, item) => total + item.monto, 0);
+  // Dinero que aún se puede gastar: ingresos - gastos - lo apartado en ahorros
+  const saldoDisponible = () => sumarMontos(ingresos) - sumarMontos(gastos) - sumarMontos(ahorros);
+
+  // Muestra el nombre de la categoría ("Alimentación"), no su código interno
+  const nombreCategoria = (codigo) => {
+    const opcion = [...document.querySelectorAll('#categoria-gasto option')].find((o) => o.value === codigo);
+    return opcion ? opcion.textContent : codigo;
+  };
 
   function renderizarHistorial() {
     if (!listaHistorial) return;
@@ -28,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       item.innerHTML = `
         <div class="history-item-info">
-          <span class="history-item-name">${escapar(gasto.descripcion)} (${escapar(gasto.categoria)})</span>
+          <span class="history-item-name">${escapar(gasto.descripcion)} (${escapar(nombreCategoria(gasto.categoria))})</span>
           <span class="history-item-date">${escapar(gasto.fecha)}</span>
         </div>
         <span class="history-item-amount">- ${formatCOP(gasto.monto)}</span>
@@ -38,16 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function actualizarInterfaz() {
-    const totalGastos = sumar(gastos);
-    const totalIngresos = sumar(ingresos);
-    const saldoDisponible = totalIngresos - totalGastos;
+    const saldo = saldoDisponible();
 
-    if (ingresosTotalElement) ingresosTotalElement.textContent = formatCOP(totalIngresos);
-    if (gastosTotalElement) gastosTotalElement.textContent = formatCOP(totalGastos);
+    if (ingresosTotalElement) ingresosTotalElement.textContent = formatCOP(sumarMontos(ingresos));
+    if (gastosTotalElement) gastosTotalElement.textContent = formatCOP(sumarMontos(gastos));
 
     if (saldoTotalElement) {
-      saldoTotalElement.textContent = formatCOP(saldoDisponible);
-      saldoTotalElement.style.color = saldoDisponible < 0 ? '#dc2626' : '';
+      saldoTotalElement.textContent = formatCOP(saldo);
+      saldoTotalElement.style.color = saldo < 0 ? '#dc2626' : '';
     }
 
     renderizarHistorial();
@@ -55,9 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function cargarDatos() {
     try {
-      [gastos, ingresos] = await Promise.all([
+      [gastos, ingresos, ahorros] = await Promise.all([
         apiFetch('/api/gastos'),
-        apiFetch('/api/ingresos')
+        apiFetch('/api/ingresos'),
+        apiFetch('/api/ahorros')
       ]);
     } catch (error) {
       alert(error.message);
@@ -69,23 +76,33 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
 
     const nuevoGasto = {
-      descripcion: document.getElementById('descripcion-gasto').value,
+      descripcion: document.getElementById('descripcion-gasto').value.trim(),
       monto: parseFloat(document.getElementById('monto-gasto').value),
       categoria: document.getElementById('categoria-gasto').value,
       fecha: document.getElementById('fecha-gasto').value,
       notas: document.getElementById('notas-gasto').value
     };
 
-    if (sumar(gastos) + nuevoGasto.monto > sumar(ingresos)) {
-      alert('⚠️ Advertencia: Este gasto superará tus ingresos registrados.');
+    // Sin ingresos (o sin saldo suficiente) no se pueden registrar gastos
+    // (el backend también lo comprueba)
+    const saldo = saldoDisponible();
+    if (superaSaldo(nuevoGasto.monto, saldo)) {
+      alert(ingresos.length === 0
+        ? '⚠️ Primero registra un ingreso. Sin ingresos no puedes agregar gastos.'
+        : `⚠️ No tienes saldo suficiente para este gasto. Saldo disponible: ${formatCOP(Math.max(saldo, 0))}.`);
+      return;
     }
 
+    const boton = formGastos.querySelector('button[type="submit"]');
+    if (boton) boton.disabled = true;
     try {
       await apiFetch('/api/gastos', { method: 'POST', body: JSON.stringify(nuevoGasto) });
       formGastos.reset();
       await cargarDatos();
     } catch (error) {
       alert(error.message);
+    } finally {
+      if (boton) boton.disabled = false;
     }
   });
 

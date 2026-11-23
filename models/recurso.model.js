@@ -1,5 +1,58 @@
 const db = require('../database/connection');
 
+// Error de validación con su código HTTP; el controlador lo devuelve tal cual
+class ErrorValidacion extends Error {
+  constructor(mensaje, estado = 400) {
+    super(mensaje);
+    this.estado = estado;
+  }
+}
+
+const formatoCOP = (valor) =>
+  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 2 })
+    .format(valor);
+
+// Saldo disponible del usuario: ingresos - gastos - ahorros.
+// Bloquea al usuario durante la transacción para que dos peticiones
+// simultáneas no gasten el mismo dinero.
+const saldoDisponible = async (cliente, usuarioId) => {
+  await cliente.query('SELECT pg_advisory_xact_lock($1)', [usuarioId]);
+  const resultado = await cliente.query(
+    `SELECT (SELECT COALESCE(SUM(monto), 0) FROM ingresos WHERE usuario_id = $1)
+          - (SELECT COALESCE(SUM(monto), 0) FROM gastos   WHERE usuario_id = $1)
+          - (SELECT COALESCE(SUM(monto), 0) FROM ahorros  WHERE usuario_id = $1) AS saldo`,
+    [usuarioId]
+  );
+  return Number(resultado.rows[0].saldo);
+};
+
+// No se puede gastar ni ahorrar más que el saldo disponible
+const validarSaldo = async (cliente, usuarioId, monto) => {
+  const saldo = await saldoDisponible(cliente, usuarioId);
+  if (Math.round(Number(monto) * 100) > Math.round(saldo * 100)) {
+    const tieneIngresos = (await cliente.query('SELECT 1 FROM ingresos WHERE usuario_id = $1 LIMIT 1', [usuarioId])).rowCount > 0;
+    throw new ErrorValidacion(
+      tieneIngresos
+        ? `No tienes saldo suficiente. Saldo disponible: ${formatoCOP(Math.max(saldo, 0))}.`
+        : 'Primero registra un ingreso. Sin ingresos no puedes agregar gastos ni ahorros.'
+    );
+  }
+};
+
+// Resta de cada meta lo que le sumaron los ahorros indicados (al borrarlos)
+const revertirAhorrosEnMetas = async (cliente, usuarioId, condicionExtra = '', parametros = []) => {
+  await cliente.query(
+    `UPDATE metas m
+        SET monto_ahorrado = GREATEST(m.monto_ahorrado - s.total, 0)
+       FROM (SELECT meta_id, SUM(monto) AS total
+               FROM ahorros
+              WHERE usuario_id = $1 AND meta_id IS NOT NULL ${condicionExtra}
+              GROUP BY meta_id) s
+      WHERE m.id = s.meta_id AND m.usuario_id = $1`,
+    [usuarioId, ...parametros]
+  );
+};
+
 // Cada recurso describe una tabla de Supabase y los campos que envía la página.
 // campos: { nombre que envía la página : columna en la base de datos }
 const RECURSOS = {
@@ -17,7 +70,11 @@ const RECURSOS = {
     obligatorios: ['descripcion', 'monto', 'categoria', 'fecha'],
     numericos: ['monto'],
     defecto: { notas: '' },
-    seleccion: 'id, descripcion, monto, categoria, fecha, notas'
+    seleccion: 'id, descripcion, monto, categoria, fecha, notas',
+    antesDeCrear: async (cliente, usuarioId, datos) => {
+      await validarSaldo(cliente, usuarioId, datos.monto);
+      return {};
+    }
   },
   ahorros: {
     tabla: 'ahorros',
@@ -25,20 +82,26 @@ const RECURSOS = {
     obligatorios: ['nombre', 'monto', 'fecha'],
     numericos: ['monto'],
     defecto: { notas: '' },
-    seleccion: 'id, nombre, monto, fecha, notas',
-    // Antes de guardar el ahorro, busca la meta del usuario con el mismo nombre
-    // y la enlaza (columna meta_id). Devuelve columnas extra para el INSERT.
+    seleccion: 'id, nombre, monto, fecha, notas, meta_id AS "metaId"',
+    // Antes de guardar el ahorro: comprueba el saldo y enlaza la meta que el
+    // usuario eligió en el formulario (metaId). Así dos metas con el mismo
+    // nombre no se confunden. Devuelve columnas extra para el INSERT.
     antesDeCrear: async (cliente, usuarioId, datos) => {
+      await validarSaldo(cliente, usuarioId, datos.monto);
+
+      if (vacio(datos.metaId)) return { meta_id: null };
+      if (!/^\d+$/.test(String(datos.metaId))) throw new ErrorValidacion('La meta elegida no es válida.');
+
       const resultado = await cliente.query(
-        `SELECT id FROM metas
-          WHERE usuario_id = $1
-            AND LOWER(TRIM(nombre)) = LOWER(TRIM($2))
-          ORDER BY id DESC
-          LIMIT 1`,
-        [usuarioId, datos.nombre]
+        'SELECT id FROM metas WHERE id = $1 AND usuario_id = $2',
+        [Number(datos.metaId), usuarioId]
       );
-      return { meta_id: resultado.rows[0] ? resultado.rows[0].id : null };
+      if (resultado.rowCount === 0) throw new ErrorValidacion('La meta elegida no existe.');
+      return { meta_id: resultado.rows[0].id };
     },
+    // Al borrar ahorros, se descuenta de las metas lo que les habían sumado
+    antesDeBorrarTodos: (cliente, usuarioId) => revertirAhorrosEnMetas(cliente, usuarioId),
+    antesDeBorrarUno: (cliente, usuarioId, id) => revertirAhorrosEnMetas(cliente, usuarioId, 'AND id = $2', [id]),
     // Después de guardarlo, suma el monto a la meta enlazada
     despuesDeCrear: async (cliente, usuarioId, datos, extra) => {
       if (!extra.meta_id) return;
@@ -62,6 +125,15 @@ const RECURSOS = {
     obligatorios: ['nombre', 'categoria', 'fecha', 'objetivo'],
     numericos: ['objetivo', 'ahorrado'],
     defecto: { ahorrado: 0 },
+    // La fecha límite no puede estar en el pasado (hora de Colombia)
+    antesDeCrear: async (cliente, usuarioId, datos) => {
+      const resultado = await cliente.query(
+        "SELECT $1::date < (NOW() AT TIME ZONE 'America/Bogota')::date AS pasada",
+        [datos.fecha]
+      );
+      if (resultado.rows[0].pasada) throw new ErrorValidacion('La fecha límite no puede estar en el pasado.');
+      return {};
+    },
     // Se renombran las columnas para que la página reciba fecha, objetivo y ahorrado
     seleccion:
       'id, nombre, categoria, fecha_limite AS fecha, monto_objetivo AS objetivo, monto_ahorrado AS ahorrado, progreso'
@@ -124,17 +196,37 @@ const crear = async (cfg, usuarioId, datos) => {
   }
 };
 
-const borrarTodos = async (cfg, usuarioId) => {
-  await db.query(`DELETE FROM ${cfg.tabla} WHERE usuario_id = $1`, [usuarioId]);
+// Ejecuta pasos en una transacción: o se aplican todos o ninguno
+const enTransaccion = async (pasos) => {
+  const cliente = await db.connect();
+  try {
+    await cliente.query('BEGIN');
+    const resultado = await pasos(cliente);
+    await cliente.query('COMMIT');
+    return resultado;
+  } catch (error) {
+    await cliente.query('ROLLBACK');
+    throw error;
+  } finally {
+    cliente.release();
+  }
 };
+
+const borrarTodos = (cfg, usuarioId) =>
+  enTransaccion(async (cliente) => {
+    if (cfg.antesDeBorrarTodos) await cfg.antesDeBorrarTodos(cliente, usuarioId);
+    await cliente.query(`DELETE FROM ${cfg.tabla} WHERE usuario_id = $1`, [usuarioId]);
+  });
 
 // Devuelve cuántas filas se borraron (0 si no existía o no era del usuario)
-const borrarUno = async (cfg, usuarioId, id) => {
-  const resultado = await db.query(
-    `DELETE FROM ${cfg.tabla} WHERE id = $1 AND usuario_id = $2`,
-    [id, usuarioId]
-  );
-  return resultado.rowCount;
-};
+const borrarUno = (cfg, usuarioId, id) =>
+  enTransaccion(async (cliente) => {
+    if (cfg.antesDeBorrarUno) await cfg.antesDeBorrarUno(cliente, usuarioId, id);
+    const resultado = await cliente.query(
+      `DELETE FROM ${cfg.tabla} WHERE id = $1 AND usuario_id = $2`,
+      [id, usuarioId]
+    );
+    return resultado.rowCount;
+  });
 
-module.exports = { vacio, obtenerConfig, listar, crear, borrarTodos, borrarUno };
+module.exports = { vacio, obtenerConfig, listar, crear, borrarTodos, borrarUno, ErrorValidacion };

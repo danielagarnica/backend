@@ -19,7 +19,7 @@ Servidor en Node.js para PocketPet. Entrega la página web (carpeta `public/`) y
 2. Cambia a la rama de trabajo:
 
    ```bash
-   git checkout template_node
+   git checkout feature/esquema-bd
    ```
 
 3. Instala las dependencias:
@@ -84,11 +84,17 @@ El navegador la envía sola en cada petición; el frontend no guarda ningún tok
 | GET | `/api/gastos` | Lista los gastos del usuario |
 | POST | `/api/gastos` | Crea un gasto (descripcion, monto, categoria, fecha, notas) |
 | GET | `/api/ahorros` | Lista los ahorros del usuario |
-| POST | `/api/ahorros` | Crea un ahorro (nombre, monto, fecha, notas). Suma el monto a la meta con el mismo nombre |
+| POST | `/api/ahorros` | Crea un ahorro (nombre, monto, fecha, notas, metaId opcional). Suma el monto a la meta elegida (`metaId`) |
 | GET | `/api/metas` | Lista las metas del usuario |
 | POST | `/api/metas` | Crea una meta (nombre, categoria, fecha, objetivo, ahorrado) |
 | DELETE | `/api/<recurso>` | Borra todos los registros del usuario en ese recurso |
 | DELETE | `/api/<recurso>/<id>` | Borra un registro |
+
+**Reglas que valida el servidor:**
+
+- No se puede registrar un gasto ni un ahorro mayor que el saldo disponible (ingresos − gastos − ahorros). Sin ingresos, no se permiten.
+- La fecha límite de una meta no puede estar en el pasado (hora de Colombia).
+- Al borrar ahorros, se descuenta de cada meta lo que esos ahorros le habían sumado.
 
 `<recurso>` puede ser `ingresos`, `gastos`, `ahorros` o `metas`.
 
@@ -131,7 +137,7 @@ El esquema está en [`database/schema.sql`](database/schema.sql) y sigue el diag
 | `ingresos` | `usuarios` 1 — N | |
 | `gastos` | `usuarios` 1 — N, `categorias` 1 — N | `categoria` es FK a `categorias.codigo` |
 | `metas` | `usuarios` 1 — N | `progreso` (0–100) se calcula solo |
-| `ahorros` | `usuarios` 1 — N, `metas` 1 — N | `meta_id` se llena si el nombre del ahorro coincide con una meta |
+| `ahorros` | `usuarios` 1 — N, `metas` 1 — N | `meta_id` es la meta que el usuario elige en el formulario |
 
 Todas las tablas tienen RLS activado y sin permisos para `anon`/`authenticated`: los datos solo se leen a través de este backend, nunca directamente con la clave pública de Supabase.
 
